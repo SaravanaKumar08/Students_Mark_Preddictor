@@ -33,12 +33,15 @@ pipeline {
                 sh 'sleep 3'
                 sh '''curl -X POST http://localhost:5000/predict \
                     -H "Content-Type: application/json" \
-                    -d "{\\"hours_studied\\": 7}"'''
+                    -d "{\"hours_studied\": 7}"'''
             }
         }
     }
 
     post {
+        success {
+            echo 'Deployment Successful!'
+        }
         failure {
             sh 'docker compose down'
         }
