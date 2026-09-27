@@ -1,0 +1,14 @@
+# Minimal image to run the MLflow tracking server as a container
+FROM python:3.11-slim
+
+# Install full mlflow (not mlflow-skinny) because this container
+# runs the tracking server + web UI — skinny does not include the UI
+RUN pip install --no-cache-dir mlflow
+
+# Persist experiment data here — docker-compose mounts a volume at this path
+VOLUME /mlflow
+
+# Start the tracking server, binding to all network interfaces inside the container.
+# IMPORTANT: CMD JSON array must be written on ONE single line.
+# Splitting across multiple lines causes a Dockerfile parse error on build.
+CMD ["mlflow", "server", "--backend-store-uri", "sqlite:///mlflow/mlflow.db", "--default-artifact-root", "/mlflow/artifacts", "--host", "0.0.0.0", "--port", "5000"]

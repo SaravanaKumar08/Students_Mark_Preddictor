@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/SaravanaKumar08/Students_Mark_Preddictor.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker compose build'
+            }
+        }
+
+        stage('Train Model') {
+            steps {
+                sh 'docker compose up -d mlflow'
+                sh 'sleep 5'
+                sh 'docker compose run --rm train'
+            }
+        }
+
+        stage('Deploy API') {
+            steps {
+                sh 'docker compose up -d api'
+            }
+        }
+
+        stage('Test API') {
+            steps {
+                sh 'sleep 3'
+                sh '''curl -X POST http://localhost:5000/predict \
+                    -H "Content-Type: application/json" \
+                    -d "{\\"hours_studied\\": 7}"'''
+            }
+        }
+    }
+
+    post {
+        failure {
+            sh 'docker compose down'
+        }
+    }
+}
