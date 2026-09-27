@@ -6,6 +6,17 @@ import joblib
 # ------------------------------------------------------------------
 app = Flask(__name__)
 
+# ------------------------------------------------------------------
+# Load the trained model once at startup (not on every request)
+# The model file must exist — run train_model.py first
+# ------------------------------------------------------------------
+model = joblib.load("student_model.pkl")
+
+
+@app.route("/")
+def home():
+    # Simple health-check route — confirms the API is running
+    return "Student Marks Predictor API — running!"
 
 
 @app.route("/predict", methods=["POST"])
