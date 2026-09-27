@@ -16,6 +16,7 @@ pipeline {
 
         stage('Train Model') {
             steps {
+                sh 'touch student_model.pkl'
                 sh 'docker compose up -d mlflow'
                 sh 'sleep 5'
                 sh 'docker compose run --rm train'
